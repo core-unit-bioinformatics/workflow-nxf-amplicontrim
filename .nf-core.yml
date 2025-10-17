@@ -1,26 +1,4 @@
-repository_type: pipeline
-
-nf_core_version: 3.3.2
-
 lint:
-  files_unchanged:
-    - CODE_OF_CONDUCT.md
-    - assets/nf-core-amplicontrim_logo_light.png
-    - docs/images/nf-core-amplicontrim_logo_light.png
-    - docs/images/nf-core-amplicontrim_logo_dark.png
-    - .github/ISSUE_TEMPLATE/bug_report.yml
-    - .github/CONTRIBUTING.md
-    - .github/PULL_REQUEST_TEMPLATE.md
-    - assets/email_template.txt
-    - docs/README.md
-    - .github/CONTRIBUTING.md
-    - .github/CONTRIBUTING.md
-    - .github/PULL_REQUEST_TEMPLATE.md
-    - .github/CONTRIBUTING.md
-    - assets/sendmail_template.txt
-  nextflow_config: false
-  nf_test_content: false
-  multiqc_config: false
   files_exist:
     - CODE_OF_CONDUCT.md
     - assets/nf-core-amplicontrim_logo_light.png
@@ -47,18 +25,37 @@ lint:
     - .github/actions/nf-test/action.yml
     - nf-test.config
     - tests/default.nf.test
+  files_unchanged:
+    - CODE_OF_CONDUCT.md
+    - assets/nf-core-amplicontrim_logo_light.png
+    - docs/images/nf-core-amplicontrim_logo_light.png
+    - docs/images/nf-core-amplicontrim_logo_dark.png
+    - .github/ISSUE_TEMPLATE/bug_report.yml
+    - .github/CONTRIBUTING.md
+    - .github/PULL_REQUEST_TEMPLATE.md
+    - assets/email_template.txt
+    - docs/README.md
+    - .github/CONTRIBUTING.md
+    - .github/CONTRIBUTING.md
+    - .github/PULL_REQUEST_TEMPLATE.md
+    - .github/CONTRIBUTING.md
+    - assets/sendmail_template.txt
+  included_configs: false
+  multiqc_config: false
+  nextflow_config: false
+  nf_test_content: false
   readme:
     - nextflow_badge
     - nfcore_template_badge
-  included_configs: false
-
+nf_core_version: 3.4.1
+repository_type: pipeline
 template:
-  org: core-unit-bioinformatics
-  name: amplicontrim
-  description: Trims BAM files based on amplicon regions from Ion S5 output.
   author: Kai Horny
-  version: 1.0.0dev
-  force: true
+  description: Trims BAM files based on amplicon regions from Ion S5 output.
+  force: false
+  is_nfcore: false
+  name: amplicontrim
+  org: core-unit-bioinformatics
   outdir: .
   skip_features:
     - github_badges
@@ -73,4 +70,4 @@ template:
     - gitpod
     - codespaces
     - vscode
-  is_nfcore: false
+  version: 1.0.0dev
