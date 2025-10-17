@@ -9,16 +9,11 @@ process SAMTOOLS_SORT {
 
     input:
     tuple val(meta) , path(bam)
-    tuple val(meta2), path(fasta)
-    val index_format
-
+    
     output:
     tuple val(meta), path("${prefix}.bam"),                 emit: bam,  optional: true
     tuple val(meta), path("${prefix}.cram"),                emit: cram, optional: true
     tuple val(meta), path("${prefix}.sam"),                 emit: sam,  optional: true
-    tuple val(meta), path("${prefix}.${extension}.crai"),   emit: crai, optional: true
-    tuple val(meta), path("${prefix}.${extension}.csi"),    emit: csi,  optional: true
-    tuple val(meta), path("${prefix}.${extension}.bai"),    emit: bai,  optional: true
     path  "versions.yml",                                   emit: versions
 
     when:
@@ -30,15 +25,7 @@ process SAMTOOLS_SORT {
     extension = args.contains("--output-fmt sam") ? "sam" :
                 args.contains("--output-fmt cram") ? "cram" :
                 "bam"
-    def reference = fasta ? "--reference ${fasta}" : ""
-    output_file = index_format ? "${prefix}.${extension}##idx##${prefix}.${extension}.${index_format} --write-index" : "${prefix}.${extension}"
-    if (index_format) {
-        if (!index_format.matches('bai|csi|crai')) {
-            error "Index format not one of bai, csi, crai."
-        } else if (extension == "sam") {
-            error "Indexing not compatible with SAM output"
-        }
-    }
+    output_file = "${prefix}.${extension}"
     if ("$bam" == "${prefix}.bam") error "Input and output names are the same, use \"task.ext.prefix\" to disambiguate!"
 
     """
@@ -49,7 +36,6 @@ process SAMTOOLS_SORT {
         $args \\
         -T ${prefix} \\
         --threads $task.cpus \\
-        ${reference} \\
         -o ${output_file} \\
         -
 

@@ -6,7 +6,8 @@
 include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_amplicontrim_pipeline'
-include { SAMTOOLS_AMPLICONCLIP } from '../modules/nf-core/samtools/ampliconclip/main' 
+include { SAMTOOLS_AMPLICONCLIP  } from '../modules/nf-core/samtools/ampliconclip/main' 
+include { SAMTOOLS_SORT          } from '../modules/nf-core/samtools/sort/main' 
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -21,22 +22,20 @@ workflow AMPLICONTRIM {
     main:
 
     // Initialize file channels based on params
-    bed       = params.bed     ? Channel.fromPath(params.bed).collect()      : Channel.value([])
+    ch_bed       = params.bed     ? Channel.fromPath(params.bed).collect()      : Channel.value([])
 
     ch_versions = Channel.empty()
 
     SAMTOOLS_AMPLICONCLIP(
         ch_samplesheet,
-        bed,
+        ch_bed,
         true,
         true
     )
     ch_versions = ch_versions.mix(SAMTOOLS_AMPLICONCLIP.out.versions)
 
     SAMTOOLS_SORT(
-        SAMTOOLS_AMPLICONCLIP.out.bam,
-        null,
-        "bai"
+        SAMTOOLS_AMPLICONCLIP.out.bam
     )
     ch_versions = ch_versions.mix(SAMTOOLS_SORT.out.versions)
 
