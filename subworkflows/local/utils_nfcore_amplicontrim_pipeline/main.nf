@@ -91,6 +91,9 @@ workflow PIPELINE_INITIALISATION {
                 return [ meta.id, meta, [ bam ] ]
         }
         .groupTuple()
+        .map {samplesheet ->
+           validateInputSamplesheet(samplesheet)
+        }
         .map {
             meta, bams ->
                 return [ meta, bams.flatten() ]
@@ -158,6 +161,15 @@ workflow PIPELINE_COMPLETION {
 //
 def validateInputParameters() {
     genomeExistsError()
+}
+
+//
+// Validate channels from input samplesheet
+//
+def validateInputSamplesheet(input) {
+    def (metas, bams) = input[1..2]
+
+    return [ metas[0], bams ]
 }
 
 //
