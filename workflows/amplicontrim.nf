@@ -21,8 +21,7 @@ workflow AMPLICONTRIM {
     main:
 
     // Initialize file channels based on params
-    bed     = params.bed     ? Channel.fromPath(params.bed).collect()      : Channel.value([])
-
+    bed       = params.bed     ? Channel.fromPath(params.bed).collect()      : Channel.value([])
 
     ch_versions = Channel.empty()
 
@@ -33,6 +32,13 @@ workflow AMPLICONTRIM {
         true
     )
     ch_versions = ch_versions.mix(SAMTOOLS_AMPLICONCLIP.out.versions)
+
+    SAMTOOLS_SORT(
+        SAMTOOLS_AMPLICONCLIP.out.bam,
+        null,
+        "bai"
+    )
+    ch_versions = ch_versions.mix(SAMTOOLS_SORT.out.versions)
 
     //
     // Collate and save software versions
