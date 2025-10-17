@@ -3,14 +3,14 @@ process CONVERT_SOFTCLIP_HARDCLIP {
     label 'process_high'
     conda "conda-forge::pysam=0.23.3"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/pysam:0.23.3--py39hdd5828d_1 ' :
-        'biocontainers/pysam:0.23.3--py39hdd5828d_1 ' }"
+        'https://depot.galaxyproject.org/singularity/pysam:0.23.3--py39hdd5828d_1' :
+        'biocontainers/pysam:0.23.3--py39hdd5828d_1' }"
 
     input:
     tuple val(meta), path(bam)
 
     output:
-    env fastq           , emit: fastq
+    path fastq           , emit: fastq
     path "versions.yml"  , emit: versions
 
     when:
@@ -19,11 +19,6 @@ process CONVERT_SOFTCLIP_HARDCLIP {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-
-    // check if vcf file is gzipped
-    def vcf_list = vcf.collect { it.toString() }
-    def vcf_zip  = vcf_list[0].endsWith('.gz')
-    def command1 = vcf_zip ? 'zcat' : 'cat'
 
     """
     convert-softclip-to-hardclip.py \\
