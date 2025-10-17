@@ -223,9 +223,5 @@
             "$ref": "#/$defs/generic_options"
         }
     ],
-    "properties": {
-        "bed": {
-            "type": "string"
-        }
-    }
+    "properties": {}
 }

@@ -3,11 +3,10 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-include { paramsSummaryMap       } from 'plugin/nf-schema'
-include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_amplicontrim_pipeline'
-include { SAMTOOLS_AMPLICONCLIP  } from '../modules/nf-core/samtools/ampliconclip/main' 
-include { SAMTOOLS_SORT          } from '../modules/nf-core/samtools/sort/main' 
+include { paramsSummaryMap             } from 'plugin/nf-schema'
+include { softwareVersionsToYAML       } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { methodsDescriptionText       } from '../subworkflows/local/utils_nfcore_amplicontrim_pipeline'
+include { CONVERT_SOFTCLIP_HARDCLIP    } from '../modules/local/convert-hardclip-softclip/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -21,23 +20,12 @@ workflow AMPLICONTRIM {
     ch_samplesheet // channel: samplesheet read in from --input
     main:
 
-    // Initialize file channels based on params
-    ch_bed       = params.bed     ? Channel.fromPath(params.bed).collect()      : Channel.value([])
-
     ch_versions = Channel.empty()
 
-    SAMTOOLS_AMPLICONCLIP(
-        ch_samplesheet,
-        ch_bed,
-        true,
-        true
+    CONVERT_SOFTCLIP_HARDCLIP(
+        ch_samplesheet
     )
-    ch_versions = ch_versions.mix(SAMTOOLS_AMPLICONCLIP.out.versions)
-
-    SAMTOOLS_SORT(
-        SAMTOOLS_AMPLICONCLIP.out.bam
-    )
-    ch_versions = ch_versions.mix(SAMTOOLS_SORT.out.versions)
+    ch_versions = ch_versions.mix(CONVERT_SOFTCLIP_HARDCLIP.out.versions)
 
     //
     // Collate and save software versions
