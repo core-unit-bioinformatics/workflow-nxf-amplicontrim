@@ -6,6 +6,7 @@
 include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_amplicontrim_pipeline'
+include { SAMTOOLS_AMPLICONCLIP } from '../modules/nf-core/samtools/ampliconclip/main' 
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -19,7 +20,19 @@ workflow AMPLICONTRIM {
     ch_samplesheet // channel: samplesheet read in from --input
     main:
 
+    // Initialize file channels based on params
+    bed     = params.bed     ? Channel.fromPath(params.bed).collect()      : Channel.value([])
+
+
     ch_versions = Channel.empty()
+
+    SAMTOOLS_AMPLICONCLIP(
+        ch_samplesheet,
+        bed,
+        true,
+        true
+    )
+    ch_versions = ch_versions.mix(SAMTOOLS_AMPLICONCLIP.out.versions)
 
     //
     // Collate and save software versions
